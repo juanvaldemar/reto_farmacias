@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   name: com.valdemar.reto01
+   namespace: reto01
+spec:
+   replicas: 2
+   selector:
+    matchLabels:
+      app: com.valdemar.reto01
+   strategy:
+    type: Recreate
+   template:
+     metadata:
+       labels:
+         app: com.valdemar.reto01
+     spec:
+       containers:
+       - name: com.valdemar.reto01
+         image: val.azurecr.io/com.valdemar.reto01:latest
+         imagePullPolicy: Always
+         ports:
+          - containerPort: 9093
+         env:
+           - name: ENV
+             value: ambiente
+       imagePullSecrets:
+       - name: acr-registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: com.valdemar.reto01-svc
+  namespace: visor
+  labels:
+    app: "com.valdemar.reto01"
+spec:
+  ports:
+  - port: 4083
+    targetPort: 9093
+    protocol: TCP
+    name: http
+  selector:
+    app: com.valdemar.reto01
+
